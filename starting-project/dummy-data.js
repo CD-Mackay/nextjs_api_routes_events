@@ -31,6 +31,12 @@ const DUMMY_EVENTS = [
   },
 ];
 
+const DUMMY_EMAILS = [];
+
+export function getAllEmails() {
+  return DUMMY_EMAILS;
+}
+
 export function getFeaturedEvents() {
   return DUMMY_EVENTS.filter((event) => event.isFeatured);
 }
