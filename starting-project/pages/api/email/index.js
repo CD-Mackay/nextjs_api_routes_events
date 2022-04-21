@@ -13,7 +13,7 @@ export function extractData(filePath) {
 
 function handler(req, res) {
 
-  if (req.method === "POST ") {
+  if (req.method === 'POST') {
     const email = req.body.email;
     const filePath = buildPath();
     const emailList = extractData(filePath);
@@ -23,12 +23,14 @@ function handler(req, res) {
     });
 
      fs.writeFileSync(filePath, JSON.stringify(emailList));
+    console.log(email);
 
-    res.status(201).json({ message: "heyyooo it worked!", email: emailList });
+    return res.status(201).json({ message: "heyyooo it worked!", email, });
     
-  } else if (req.method === "GET") {
-    res.json({ message: "Why are you here? This is an API route" });
-  }
+  } 
+  // else if (req.method === "GET") {
+  //   res.json({ message: "Why are you here? This is an API route" });
+  // }
 };
 
 export default handler;

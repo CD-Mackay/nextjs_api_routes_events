@@ -8,20 +8,19 @@ function NewsletterRegistration() {
     event.preventDefault();
     const email = emailRef.current.value;
 
-    const reqBody = { email };
 
-    fetch("/api/email", {
-      method: "POST",
-      body: JSON.stringify(reqBody),
+    fetch('/api/email', {
+      method: 'POST',
+      body: JSON.stringify({ email: email }),
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       
       // fetch user input (state or refs)
       // optional: validate input
       // send valid data to API
     })
-    .then((response) => response.json())
+    .then(response => response.json())
       .then((data) => console.log(data));
   }
 
