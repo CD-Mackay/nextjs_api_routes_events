@@ -16,10 +16,13 @@ function NewsletterRegistration() {
       headers: {
         "Content-Type": "application/json",
       },
+      
       // fetch user input (state or refs)
       // optional: validate input
       // send valid data to API
-    });
+    })
+    .then((response) => response.json())
+      .then((data) => console.log(data));
   }
 
   return (

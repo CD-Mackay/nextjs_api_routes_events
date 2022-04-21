@@ -11,20 +11,24 @@ export function extractData(filePath) {
   return data;
 }
 
-export default function handler(req, res) {
+function handler(req, res) {
+
   if (req.method === "POST ") {
     const email = req.body.email;
     const filePath = buildPath();
     const emailList = extractData(filePath);
     emailList.push({
-      id: new Date(),
+      id: new Date().toISOString(),
       email,
     });
 
-    fs.writeFileSync(filePath, JSON.stringify(emailList));
+     fs.writeFileSync(filePath, JSON.stringify(emailList));
 
     res.status(201).json({ message: "heyyooo it worked!", email: emailList });
+    
   } else if (req.method === "GET") {
     res.json({ message: "Why are you here? This is an API route" });
   }
-}
+};
+
+export default handler;
