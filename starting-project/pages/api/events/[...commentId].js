@@ -1,4 +1,5 @@
 import fs from "fs";
+import build from "next/dist/build";
 import path from "path";
 
 export function buildPath() {
@@ -14,8 +15,6 @@ export function extractData(filePath) {
 function handler(req, res) {
 
   if (req.method === 'POST') {
-    console.log(req.body);
-    console.log(req.query);
     const eventId = req.query.commentId[0];
     const commentId = req.query.commentId[1];
 
@@ -35,7 +34,10 @@ function handler(req, res) {
     res.status(201).json({ message: "heyyooo it worked!"});
     
   } else if (req.method === "GET") {
-    res.json({ message: "Why are you here? This is an API route" });
+    const filePath = buildPath();
+
+    const comments = fs.readFileSync(filePath);
+    res.json({ message: "Why are you here? This is an API route", comments: JSON.parse(comments) });
   }
 };
 
