@@ -7,7 +7,7 @@ function CommentList(props) {
 
   return (
     <ul className={classes.comments}>
-      {/* {comments.map((comment) => {
+      {comments.length > 0 && comments.map((comment) => {
         return (
           <li key={comment.commentId}>
             <p>{comment.text}</p>
@@ -16,7 +16,7 @@ function CommentList(props) {
             </div>
           </li>
         );
-      })} */}
+      })}
       {/* Render list of comments - fetched from API */}
     </ul>
   );
