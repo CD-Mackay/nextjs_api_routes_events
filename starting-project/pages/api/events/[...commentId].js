@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 
 export function buildPath() {
-  return path.join(process.cwd(), "dummy-emails.json");
+  return path.join(process.cwd(), "dummy-comments.json");
 }
 
 export function extractData(filePath) {
@@ -13,17 +13,24 @@ export function extractData(filePath) {
 
 function handler(req, res) {
 
-  if (req.method === "POST ") {
+  if (req.method === 'POST') {
     console.log(req.body);
-    // const email = req.body.email;
-    // const filePath = buildPath();
-    // const emailList = extractData(filePath);
-    // emailList.push({
-    //   id: new Date().toISOString(),
-    //   email,
-    // });
+    console.log(req.query);
+    const eventId = req.query.commentId[0];
+    const commentId = req.query.commentId[1];
 
-    //  fs.writeFileSync(filePath, JSON.stringify(emailList));
+    const commentObject = {
+      email: req.body.email,
+      name: req.body.name,
+      text: req.body.text,
+      eventId,
+      commentId
+    };
+    const filePath = buildPath();
+    const commentList = extractData(filePath);
+    commentList.push(commentObject);
+
+     fs.writeFileSync(filePath, JSON.stringify(commentList));
 
     res.status(201).json({ message: "heyyooo it worked!"});
     
