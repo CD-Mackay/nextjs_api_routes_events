@@ -12,26 +12,48 @@ export function extractData(filePath) {
   return data;
 }
 
+async function connectDataBase() {
+  const client = await MongoClient.connect(
+    "mongodb+srv://Connor:Shawt0graph@authcluster.jdoeb.mongodb.net/events?retryWrites=true&w=majority"
+  );
+
+  return client;
+}
+
+async function insertDocument() {
+  const db = client.db();
+  await db.collection("emailList").insertOne({ email });
+}
+
 async function handler(req, res) {
   if (req.method === "POST") {
     const email = req.body.email;
-    const filePath = buildPath();
-    const emailList = extractData(filePath);
-    emailList.push({
-      id: new Date().toISOString(),
-      email,
-    });
 
-  const client = await MongoClient.connect(
-      "mongodb+srv://Connor:Shawt0graph@authcluster.jdoeb.mongodb.net/events?retryWrites=true&w=majority"
-    );
-      console.log("connected to database");
-      const db = client.db()
-      await db.collection('emailList').insertOne({ email, })
+    if (!email || !email.includes("@")) {
+      res.status(422).json({ message: "invalid email" });
+    }
 
+    let client;
+
+    try {
+      client = connectDataBase();
+    } catch (error) {
+      res.status(500).json({ message: "connecting to database failed" });
+      return;
+    }
+
+    try {
+      insertDocument(client, { email });
       client.close();
+    } catch (error) {
+      res.status(500).json({ message: "Inserting Data Failed" });
+      return;
+    }
 
-    console.log(email);
+    console.log("connected to database");
+
+    const db = client.db();
+    await db.collection("emailList").insertOne({ email });
 
     return res.status(201).json({ message: "heyyooo it worked!", email });
   }
