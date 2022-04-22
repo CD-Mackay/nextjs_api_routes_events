@@ -20,9 +20,9 @@ async function connectDataBase() {
   return client;
 }
 
-async function insertDocument() {
+async function insertDocument(client, document) {
   const db = client.db();
-  await db.collection("emailList").insertOne({ email });
+  await db.collection("emailList").insertOne(document);
 }
 
 async function handler(req, res) {
@@ -36,14 +36,14 @@ async function handler(req, res) {
     let client;
 
     try {
-      client = connectDataBase();
+      client = await connectDataBase();
     } catch (error) {
       res.status(500).json({ message: "connecting to database failed" });
       return;
     }
 
     try {
-      insertDocument(client, { email });
+      await insertDocument(client, { email });
       client.close();
     } catch (error) {
       res.status(500).json({ message: "Inserting Data Failed" });
@@ -52,14 +52,11 @@ async function handler(req, res) {
 
     console.log("connected to database");
 
-    const db = client.db();
-    await db.collection("emailList").insertOne({ email });
-
     return res.status(201).json({ message: "heyyooo it worked!", email });
   }
-  // else if (req.method === "GET") {
-  //   res.json({ message: "Why are you here? This is an API route" });
-  // }
+  else if (req.method === "GET") {
+    res.json({ message: "Why are you here? This is an API route" });
+  }
 }
 
 export default handler;
