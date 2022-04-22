@@ -23,7 +23,7 @@ async function handler(req, res) {
     });
 
   const client = await MongoClient.connect(
-      "mongodb+srv://Connor:Shawt0graph@authcluster.jdoeb.mongodb.net/emails?retryWrites=true&w=majority"
+      "mongodb+srv://Connor:Shawt0graph@authcluster.jdoeb.mongodb.net/events?retryWrites=true&w=majority"
     );
       console.log("connected to database");
       const db = client.db()
