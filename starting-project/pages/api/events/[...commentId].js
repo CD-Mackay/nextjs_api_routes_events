@@ -2,6 +2,8 @@ import fs from "fs";
 import build from "next/dist/build";
 import path from "path";
 import { MongoClient } from "mongodb";
+import { connectDataBase, insertDocument } from "../../../helpers/db-util";
+import { connect } from "http2";
 
 export function buildPath() {
   return path.join(process.cwd(), "dummy-comments.json");
@@ -14,9 +16,14 @@ export function extractData(filePath) {
 }
 
 async function handler(req, res) {
-  const client = await MongoClient.connect(
-    "mongodb+srv://Connor:Shawt0graph@authcluster.jdoeb.mongodb.net/events?retryWrites=true&w=majority"
-  );
+  let client;
+
+  try {
+    client = await connectDataBase();
+  } catch (error) {
+    res.status(500).json({ message: "Connecting to database failed" });
+    return;
+  }
   console.log("connected to database");
 
   if (req.method === "POST") {
@@ -29,18 +36,18 @@ async function handler(req, res) {
       eventId,
     };
 
-    const db = client.db();
-    const result = await db
-      .collection("comments")
-      .insertOne({ comment: commentObject });
-    console.log(result);
+    let result;
+    try {
+      result = await insertDocument(client, "comments", {
+        comment: commentObject,
+      });
+    } catch (error) {
+      res.status(500).json({ message: "inserting data failed" });
+      return;
+    }
 
-    newComment.id = result.insertedId;
-    const filePath = buildPath();
-    const commentList = extractData(filePath);
-    commentList.push(commentObject);
+    commentObject._id = result.insertedId;
 
-    fs.writeFileSync(filePath, JSON.stringify(commentList));
 
     res.status(201).json({ message: "heyyooo it worked!" });
   }
@@ -52,7 +59,7 @@ async function handler(req, res) {
       .sort({ _id: -1 })
       .toArray();
 
-      console.log(documents)
+    console.log(documents);
 
     res.status(200).json({ comments: documents });
   }

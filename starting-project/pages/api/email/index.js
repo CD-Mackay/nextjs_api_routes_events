@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
-import { MongoClient } from "mongodb";
+import { connectDataBase, insertDocument } from "../../../helpers/db-util";
+
 
 export function buildPath() {
   return path.join(process.cwd(), "dummy-emails.json");
@@ -12,18 +13,6 @@ export function extractData(filePath) {
   return data;
 }
 
-async function connectDataBase() {
-  const client = await MongoClient.connect(
-    "mongodb+srv://Connor:Shawt0graph@authcluster.jdoeb.mongodb.net/events?retryWrites=true&w=majority"
-  );
-
-  return client;
-}
-
-async function insertDocument(client, document) {
-  const db = client.db();
-  await db.collection("emailList").insertOne(document);
-}
 
 async function handler(req, res) {
   if (req.method === "POST") {
@@ -43,7 +32,7 @@ async function handler(req, res) {
     }
 
     try {
-      await insertDocument(client, { email });
+      await insertDocument(client, 'emailList', { email });
       client.close();
     } catch (error) {
       res.status(500).json({ message: "Inserting Data Failed" });
