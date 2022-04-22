@@ -2,7 +2,11 @@ import fs from "fs";
 import build from "next/dist/build";
 import path from "path";
 import { MongoClient } from "mongodb";
-import { connectDataBase, insertDocument } from "../../../helpers/db-util";
+import {
+  connectDataBase,
+  insertDocument,
+  getAllDocument,
+} from "../../../helpers/db-util";
 import { connect } from "http2";
 
 export function buildPath() {
@@ -48,20 +52,17 @@ async function handler(req, res) {
 
     commentObject._id = result.insertedId;
 
-
     res.status(201).json({ message: "heyyooo it worked!" });
   }
   if (req.method === "GET") {
-    const db = client.db();
-    const documents = await db
-      .collection("comments")
-      .find()
-      .sort({ _id: -1 })
-      .toArray();
+    let documents;
+    try {
+      documents = await getAllDocument(client, "comments");
+      res.status(200).json({ comments: documents });
+    } catch (error) {
+      res.status(500).json({ message: "data retrieval failed" });
+    }
 
-    console.log(documents);
-
-    res.status(200).json({ comments: documents });
   }
 
   client.close();
